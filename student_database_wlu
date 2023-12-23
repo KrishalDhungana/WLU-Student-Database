@@ -1,0 +1,382 @@
+DATABASE
+
+CREATE DATABASE student_database_wlu;
+USE student_database_wlu;
+
+TABLES
+
+Student Academic Information
+CREATE TABLE student_academic_information (
+student_id INT AUTO_INCREMENT PRIMARY KEY,
+student_email VARCHAR(127) NOT NULL,
+international_student BOOLEAN NOT NULL,
+main_campus VARCHAR(127) NOT NULL CHECK (
+main_campus IN ('Waterloo', 'Brantford', 'Milton')),
+enrollment_type VARCHAR(15) NOT NULL CHECK (
+enrollment_type IN ('part-time', 'full-time')),
+coop BOOLEAN NOT NULL,
+admission_date DATE NOT NULL,
+account_balance FLOAT NOT NULL
+);
+INSERT INTO student_academic_information (student_email, international_student, main_campus, enrollment_type, coop, admission_date, account_balance)
+VALUES
+('jame1@mylaurier.ca', FALSE, 'Brantford', 'part-time', FALSE, '2022-02-05', 3834.29),
+('sant2@mylaurier.ca', TRUE, 'Waterloo', 'full-time', FALSE, '2023-01-30', 0.00),
+('jeon3@mylaurier.ca', FALSE, 'Waterloo', 'full-time', TRUE, '2021-02-15', -564.82);
+
+Student General Location
+CREATE TABLE student_general_location (
+general_location_id INT AUTO_INCREMENT PRIMARY KEY,
+city VARCHAR(50) NOT NULL,
+`province/state` VARCHAR(50) NOT NULL,
+country VARCHAR(50) NOT NULL
+);
+INSERT INTO student_general_location (city, `province/state`, country)
+VALUES
+('Toronto', 'ON', 'Canada'),
+('Rochester', 'NY', 'USA'),
+('Waterloo', 'ON', 'Canada');
+
+Student Personal Information
+CREATE TABLE student_personal_information (
+student_id INT PRIMARY KEY,
+full_name VARCHAR(127) NOT NULL,
+gender VARCHAR(7) NOT NULL CHECK (gender IN ('male', 'female', 'other')),
+phone_number VARCHAR(15) NOT NULL,
+emergency_contact_number VARCHAR(15) NOT NULL,
+personal_email VARCHAR(127) NOT NULL,
+street_address VARCHAR(127) NOT NULL,
+`postal/zip_code` VARCHAR(10) NOT NULL,
+general_location_id INT NOT NULL,
+FOREIGN KEY (student_id) REFERENCES student_academic_information(student_id),
+FOREIGN KEY (general_location_id) REFERENCES student_general_location(general_location_id)
+);
+INSERT INTO student_personal_information (student_id, full_name, gender, phone_number, emergency_contact_number, personal_email, street_address, `postal/zip_code`, general_location_id)
+VALUES
+(1, 'David Jameson', 'male', '647-029-5069', '416-092-4567', 'david_jameson03@gmail.com', '230 Pine Street', 'L5N2N5', 1),
+(2, 'Maria Dos Santos', 'female', '203-021-2039', '891-019-2391', 'mariadossantos1@outlook.com', '771 Northbridge Drive', '14602', 2),
+(3, 'Trevor Jeong', 'male', '416-092-2204', '647-888-2102', 'trevor_jeong@gmail.com', '3503 Birch Crescent', 'N2L7S3', 3);
+
+Student Program Information
+CREATE TABLE student_program_information (
+program_id INT AUTO_INCREMENT PRIMARY KEY,
+student_id INT NOT NULL,
+level VARCHAR(14) NOT NULL CHECK (level IN ('undergraduate', 'graduate', 'doctorate')),
+degree_name VARCHAR(127) NOT NULL,
+status VARCHAR(12) NOT NULL CHECK (status IN ('active', 'graduated', 'dropped')),
+program_start_date DATE NOT NULL,
+program_end_date DATE,
+FOREIGN KEY (student_id) REFERENCES student_academic_information(student_id)
+);
+INSERT INTO student_program_information (student_id, level, degree_name, status, program_start_date, program_end_date)
+VALUES
+(1, 'undergraduate', 'Bachelor of Arts', 'active', '2022-09-01', NULL),
+(2, 'undergraduate', 'Bachelor of Business Administration', 'active', '2023-09-01', NULL),
+(3, 'undergraduate', 'Bachelor of Science', 'active', '2021-09-01', NULL),
+(3, 'undergraduate', 'Bachelor of Business Administration', 'active', '2021-09-01', NULL);
+
+Student Program Details
+CREATE TABLE student_program_details (
+program_details_id INT AUTO_INCREMENT PRIMARY KEY,
+program_id INT NOT NULL,
+study_category VARCHAR(15) NOT NULL CHECK (study_category IN ('major', 'minor', 'concentration', 'specialization')),
+study_category_name VARCHAR(127) NOT NULL,
+status VARCHAR(12) NOT NULL CHECK (status IN ('active', 'completed', 'withdrawn')),
+FOREIGN KEY (program_id) REFERENCES student_program_information(program_id)
+);
+INSERT INTO student_program_details (program_id, study_category, study_category_name, status)
+VALUES
+(1, 'major', 'Criminology', 'active'),
+(1, 'minor', 'Psychology', 'active'),
+(3, 'major', 'Computer Science', 'active'),
+(3, 'concentration', 'Big Data Systems', 'active'),
+(4, 'concentration', 'Finance', 'active');
+
+Location
+CREATE TABLE location (
+location_id INT AUTO_INCREMENT PRIMARY KEY,
+campus VARCHAR(127) NOT NULL,
+building_name VARCHAR(127),
+room VARCHAR(10),
+online BOOLEAN NOT NULL
+);
+INSERT INTO location (campus, building_name, room, online)
+VALUES
+('Waterloo', 'Lazaridis Hall', 'LH1010', FALSE),
+('Waterloo', 'Lazaridis Hall', 'LH2066', FALSE),
+('Waterloo', 'Lazaridis Hall', 'LH3094', FALSE),
+('Waterloo', 'Lazaridis Hall', 'LH3098', FALSE),
+('Waterloo', 'Arts E Wing', '1E1', FALSE),
+('Waterloo', 'Bricker Academic Building', 'BA429', FALSE),
+('Brantford', 'Carnegie Building', 'CB208', FALSE),
+('Brantford', 'SC Johnson Building', 'SCJ127', FALSE),
+('Waterloo', NULL, NULL, TRUE),
+('Waterloo', 'Bricker Academic Building', 'BA110', FALSE),
+('Waterloo', 'Science Building', 'N1002', FALSE),
+('Waterloo', 'Lazaridis Hall', 'LH3065', FALSE),
+('Waterloo', 'Lazaridis Hall', 'LH3066', FALSE);
+
+General Course Information
+CREATE TABLE general_course_information (
+general_course_id INT AUTO_INCREMENT PRIMARY KEY,
+course_code VARCHAR(10) NOT NULL,
+course_name VARCHAR(127) NOT NULL,
+course_credits FLOAT NOT NULL
+);
+INSERT INTO general_course_information (course_code, course_name, course_credits)
+VALUES
+('PS260', 'Introduction to Cognitive Psychology', 0.5),
+('PS262', 'Introduction to Perception', 0.5),
+('BU111', 'Understanding the Business Environment', 0.5),
+('MA103', 'Calculus I', 0.5),
+('BU121', 'Functional Areas of the Organization', 0.5),
+('AS101', 'Astronomy I: Our Place in the Cosmos', 0.5),
+('NO105', 'Billionaires, Beavers, & Bandits', 0.5),
+('BU231', 'Business Law', 0.5),
+('CP312', 'Algorithm Design and Analysis I', 0.5),
+('CP386', 'Operating Systems', 0.5),
+('CP317', 'Software Engineering', 0.5),
+('CP340', 'E-Commerce', 0.5);
+
+Course Information
+CREATE TABLE course_information (
+course_id INT AUTO_INCREMENT PRIMARY KEY,
+general_course_id INT NOT NULL,
+course_section VARCHAR(5) NOT NULL,
+professor_name VARCHAR(127) NOT NULL,
+location_id INT NOT NULL,
+meeting_days VARCHAR(127),
+meeting_time_start TIME,
+meeting_time_end TIME,
+meeting_frequency VARCHAR(9) CHECK (meeting_frequency IN ('weekly', 'biweekly', 'monthly')),
+FOREIGN KEY (location_id) REFERENCES location(location_id),
+FOREIGN KEY (general_course_id) REFERENCES general_course_information(general_course_id)
+);
+INSERT INTO course_information (general_course_id, course_section, professor_name, location_id, meeting_days, meeting_time_start, meeting_time_end, meeting_frequency)
+VALUES
+(1, 'A', 'Dr. Bradley Leone', 7, 'MWF', '09:00:00', '09:50:00', 'weekly'),
+(2, 'C', 'Dr. Sarah Murray', 8, 'MWF', '11:00:00', '11:50:00', 'weekly'),
+(3, 'B', 'Dr. Keegan Hopp', 1, 'MWF', '08:00:00', '08:50:00', 'weekly'),
+(4, 'F', 'Dr. Steven Lee', 2, 'TuTh', '12:30:00', '13:50:00', 'weekly'),
+(5, 'C', 'Dr. Katie Johnson', 3, 'MWF', '14:30:00', '15:20:00', 'weekly'),
+(6, 'A', 'Dr. Alvin Chestnut', 9, NULL, NULL, NULL, NULL),
+(7, 'A', 'Dr. Sasha Polinski', 9, NULL, NULL, NULL, NULL),
+(8, 'D', 'Dr. Ramesh Patel', 4, 'MWF', '10:30:00', '11:20:00', 'weekly'),
+(9, 'A', 'Dr. Ivory Green', 5, 'TuTh', '08:30:00', '09:50:00', 'weekly'),
+(10, 'B', 'Dr. John Nguyen', 6, 'MWF', '12:00:00', '12:50:00', 'weekly'),
+(11, 'C', 'Dr. Scott White', 10, 'MWF', '13:00:00', '13:50:00', 'weekly'),
+(12, 'A', 'Dr. Victoria Vasquez', 11, 'TuTh', '17:30:00', '18:50:00', 'weekly');
+
+Lab Information
+CREATE TABLE lab_information (
+lab_id INT AUTO_INCREMENT PRIMARY KEY,
+lab_section VARCHAR(10) NOT NULL,
+instructor_name VARCHAR(127) NOT NULL,
+location_id INT NOT NULL,
+meeting_day VARCHAR(10) NOT NULL CHECK (meeting_day IN ('M','Tu','W','Th','F')),
+meeting_time_start TIME NOT NULL,
+meeting_time_end TIME NOT NULL,
+meeting_frequency VARCHAR(9) NOT NULL CHECK (meeting_frequency IN ('weekly', 'biweekly', 'monthly')),
+foreign key (location_id) references location(location_id)
+);
+INSERT INTO lab_information (lab_section, instructor_name, location_id, meeting_day, meeting_time_start, meeting_time_end, meeting_frequency) VALUES 
+('L1', 'Dr. David Chen', 13, 'M', '17:00:00', '18:00:00', 'weekly'),
+('L2', 'Dr. Stephanie Turner', 12, 'F', '17:30:00', '18:30:00', 'weekly'), 
+('L1', 'Dr. Michael Sohan', 12, 'Tu', '08:00:00', '09:00:00', 'weekly');
+
+Student Courses
+CREATE TABLE student_courses (
+student_course_id INT AUTO_INCREMENT PRIMARY KEY,
+student_id INT NOT NULL,
+course_id INT NOT NULL,
+lab_id INT,
+term VARCHAR(7) NOT NULL CHECK (term IN ('winter', 'spring', 'summer', 'fall')),
+year INT NOT NULL,
+required_program_id INT,
+completion_status VARCHAR(15) NOT NULL CHECK (
+completion_status IN ('pass', 'in-progress', 'failed')),
+FOREIGN KEY (student_id) REFERENCES student_academic_information(student_id),
+FOREIGN KEY (course_id) REFERENCES course_information(course_id),
+FOREIGN KEY (lab_id) REFERENCES lab_information(lab_id),
+FOREIGN KEY (required_program_id) REFERENCES student_program_information(program_id)
+);
+INSERT INTO student_courses (student_id, course_id, lab_id, term, year, required_program_id, completion_status)
+VALUES 
+(1, 1, NULL, 'fall', 2023, 1, 'in-progress'),
+(1, 2, NULL, 'fall', 2023, 1, 'in-progress'),
+(2, 3, 2, 'fall', 2023, 2, 'in-progress'),
+(2, 4, 1, 'fall', 2023, 2, 'in-progress'),
+(2, 5, 3, 'fall', 2023, 2, 'in-progress'),
+(2, 6, NULL, 'fall', 2023, NULL, 'in-progress'),
+(2, 7, NULL, 'fall', 2023, NULL, 'in-progress'),
+(3, 8, NULL, 'fall', 2023, 4, 'in-progress'),
+(3, 9, NULL, 'fall', 2023, 3, 'in-progress'),
+(3, 10, NULL, 'fall', 2023, 3, 'in-progress'),
+(3, 11, NULL, 'fall', 2023, 3, 'in-progress'),
+(3, 12, NULL, 'fall', 2023, 3, 'in-progress'),
+(3, 6, NULL, 'winter', 2022, NULL, 'pass'),
+(3, 7, NULL, 'spring', 2022, NULL, 'pass');
+
+Course Grades
+CREATE TABLE course_grades (
+course_grades_id INT AUTO_INCREMENT PRIMARY KEY,
+student_course_id INT NOT NULL,
+assessment_type VARCHAR(127) NOT NULL,
+assessment_grade FLOAT NOT NULL,
+FOREIGN KEY (student_course_id) REFERENCES student_courses(student_course_id)
+);
+INSERT INTO course_grades (student_course_id, assessment_type, assessment_grade)
+VALUES 
+(1, 'midterm', 70.43),
+(1, 'midterm 2', 71.20),
+(2, 'midterm', 79.73),
+(2, 'midterm 2', 86.95),
+(3, 'midterm', 75.32),
+(4, 'midterm', 80.23),
+(5, 'midterm', 82.40),
+(5, 'midterm 2', 90.32),
+(6, 'midterm', 85.60),
+(7, 'midterm', 91.45),
+(8, 'midterm', 92.34),
+(9, 'midterm', 85.62),
+(10, 'midterm', 91.49),
+(11, 'midterm', 99.29),
+(12, 'midterm', 100.00),
+(13, 'midterm', 95.70),
+(13, 'quizzes', 100),
+(13, 'final exam', 99.80),
+(14, 'midterm', 90.20),
+(14, 'assignments', 100),
+(14, 'quizzes', 100),
+(14, 'final exam', 93.90);
+
+Course Weights
+CREATE TABLE course_weights (
+course_weights_id INT AUTO_INCREMENT PRIMARY KEY,
+course_id INT NOT NULL,
+assessment_type VARCHAR(127) NOT NULL,
+assessment_weight FLOAT NOT NULL,
+FOREIGN KEY (course_id) REFERENCES course_information(course_id)
+);
+INSERT INTO course_weights (course_id, assessment_type, assessment_weight)
+VALUES 
+(1, 'midterm', 20),
+(1, 'midterm 2', 20),
+(1, 'final exam', 30),
+(1, 'assignments', 10),
+(1, 'discussions', 10),
+(1, 'quizzes', 10),
+(2, 'midterm', 20),
+(2, 'midterm 2', 20),
+(2, 'final exam', 30),
+(2, 'assignments', 10),
+(2, 'discussions', 10),
+(2, 'quizzes', 10),
+(3, 'midterm', 10),
+(3, 'midterm 2', 10),
+(3, 'final exam', 35),
+(3, 'assignments', 20),
+(3, 'labs', 25),
+(4, 'midterm', 10),
+(4, 'final exam', 50),
+(4, 'assignments', 20),
+(4, 'labs', 20),
+(5, 'midterm', 10),
+(5, 'midterm 2', 10),
+(5, 'final exam', 40),
+(5, 'assignments', 20),
+(5, 'labs', 20),
+(6, 'midterm', 20),
+(6, 'final exam', 50),
+(6, 'quizzes', 30),
+(7, 'midterm', 20),
+(7, 'final exam', 50),
+(7, 'assignments', 15),
+(7, 'quizzes', 15),
+(8, 'midterm', 25),
+(8, 'final exam', 50),
+(8, 'assignments', 25),
+(9, 'midterm', 25),
+(9, 'final exam', 50),
+(9, 'assignments', 20),
+(9, 'quizzes', 5),
+(10, 'midterm', 20),
+(10, 'final exam', 50),
+(10, 'assignments', 15),
+(10, 'quizzes', 15),
+(11, 'midterm', 25),
+(11, 'final exam', 50),
+(11, 'assignments', 20),
+(11, 'quizzes', 5),
+(12, 'midterm', 20),
+(12, 'final exam', 50),
+(12, 'assignments', 20),
+(12, 'quizzes', 10);
+
+TEST CASES
+
+Get a student’s current grades for each class in a single semester
+e.g., get the current grades of Trevor Jeong in fall 2023
+SELECT course_code, course_name, average_grade 
+FROM 
+(SELECT ci.general_course_id, AVG(cg.assessment_grade) AS average_grade
+FROM student_courses AS sc
+INNER JOIN course_grades AS cg ON sc.student_course_id = cg.student_course_id
+INNER JOIN course_information AS ci ON ci.course_id=sc.course_id
+WHERE sc.student_id IN (SELECT student_id FROM student_personal_information WHERE full_name='Trevor Jeong')
+AND sc.term='fall'
+AND sc.year=2023
+GROUP BY sc.student_course_id) 
+AS grades
+INNER JOIN general_course_information AS gci ON grades.general_course_id=gci.general_course_id
+
+Get the total number of completed credits for a student’s degree so far
+e.g., number of credits Maria Dos Santos has accumulated so far for her BBA degree
+SELECT SUM(course_credits) AS total_degree_credits 
+FROM 
+(SELECT student_id, sc.course_id, term, year, completion_status, required_program_id, general_course_id 
+FROM student_courses AS sc 
+INNER JOIN course_information AS ci ON sc.course_id = ci.course_id) 
+AS courses 
+INNER JOIN general_course_information AS gci ON gci.general_course_id = courses.general_course_id 
+LEFT OUTER JOIN student_program_information AS spi ON spi.program_id = courses.required_program_id
+WHERE courses.student_id IN 
+(SELECT student_id FROM student_personal_information WHERE full_name='Maria
+Dos Santos')
+AND degree_name = 'Bachelor of Business Administration'
+AND completion_status = 'pass'
+GROUP BY degree_name;
+
+Get the students who are studying a certain category
+e.g., all students whose major is computer science
+SELECT full_name, programs.student_id, study_category, study_category_name
+FROM 
+(SELECT spi.student_id, spd.study_category, spd.study_category_name
+FROM student_program_information AS spi
+INNER JOIN student_program_details AS spd ON spi.program_id=spd.program_id
+WHERE spd.study_category_name='Computer Science'
+AND spd.study_category = 'major')
+AS programs
+INNER JOIN student_personal_information AS spi ON spi.student_id = programs.student_id;
+
+Get a student’s schedule for a certain semester
+e.g., Maria Dos Santos’ schedule for fall 2023:
+SELECT course_code, course_name, professor_name, meeting_days, courses.meeting_time_start, courses.meeting_time_end, courses.meeting_frequency, l.building_name, l.room, lab_section, instructor_name, meeting_day, li.meeting_time_start, li.meeting_time_end, li.meeting_frequency, l2.building_name, l2.room 
+FROM 
+(SELECT sc.student_id, sc.course_id, lab_id, term, year, general_course_id,
+course_section, professor_name, location_id, meeting_days, meeting_time_start,
+meeting_time_end, meeting_frequency 
+FROM student_courses AS sc 
+INNER JOIN course_information AS ci ON sc.course_id = ci.course_id) 
+AS courses 
+INNER JOIN general_course_information AS gci ON gci.general_course_id = courses.general_course_id 
+LEFT OUTER JOIN lab_information AS li ON courses.lab_id = li.lab_id 
+INNER JOIN location AS l ON l.location_id = courses.location_id 
+LEFT OUTER JOIN location AS l2 ON l2.location_id = li.location_id 
+WHERE courses.student_id IN 
+(SELECT student_id 
+FROM student_personal_information 
+WHERE full_name='Maria Dos Santos') 
+AND courses.term='fall' 
+AND courses.year=2023;
+
